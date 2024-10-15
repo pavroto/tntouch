@@ -5,5 +5,5 @@ SRC_DIRS := ./src
 
 SRCS := $(shell find $(SRC_DIRS) -name '*.c')
 
-$(BUILD_DIR)/$(TARGET_EXEC):
+$(BUILD_DIR)/$(TARGET_EXEC): $(SRCS)
 	$(CC) $(SRCS) -o $@
