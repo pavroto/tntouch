@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #define LOG(m) fprintf(stderr, "LOG@%s@%d:%s\n", __FILE__, __LINE__, m)
 
@@ -19,26 +20,22 @@ int main(int argc, char *argv[])
 			// h: Show help page;
 			case 'h':
 				hflag = 1;
-				
-				#ifdef DEBUG
-				LOG("Help flag triggered");
-				#endif
 				break;
 
 			// d: Specify default template;
 			case 'd':
 				dvalue = strdup(optarg);
-				LOG("Default flag triggered");
 				break;
 
 			// t: Specify template path;
 			case 't':
 				tvalue = strdup(optarg);
-				LOG("Template flag triggered");
 				break;
 
+			case '?':
+				return 1;
+
 			default:
-				LOG("Abort");
 				abort();
 		}
 	}
