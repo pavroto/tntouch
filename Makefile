@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 TARGET_EXEC := tntouch
 CC = gcc
 BUILD_DIR := ./build
