@@ -8,9 +8,11 @@
 
 #include "default.h"
 
-void show_help_text();
+void show_help_text(void);
 
-int main(int argc, char *argv[])
+int 
+main
+(int argc, char *argv[])
 {
 	int opt;
 	int hflag = 0;
@@ -54,13 +56,17 @@ int main(int argc, char *argv[])
 	if (result == NULL)
 		return 1;
 
+  printf("%s\n", result);
+
 	printf("hflag: %d\ndvalue: %s\ntvalue: %s\n", hflag, dvalue, tvalue); 	
 
 	// all good;
 	return 0;
 }
 
-void show_help_text()
+void 
+show_help_text
+(void)
 {
 	static const char *help_text = \
 		"Usage: tntouch [OPTION]... PATH [VARIABLE]...\n"
