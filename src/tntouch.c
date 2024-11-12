@@ -1,17 +1,19 @@
+// SPDX-License-Identifier: MIT
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
 
-#define LOG(m) fprintf(stderr, "LOG@%s@%d:%s\n", __FILE__, __LINE__, m)
+#include "default.h"
 
 void show_help_text();
 
 int main(int argc, char *argv[])
 {
 	int opt;
-	int hflag;
+	int hflag = 0;
 	char* dvalue = NULL;
 	char* tvalue = NULL;
 	
@@ -40,7 +42,6 @@ int main(int argc, char *argv[])
 			default:
 				abort();
 		}
-
 	}
 
 	if (hflag)
@@ -49,7 +50,12 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	printf("hflag: %d\ndvalue: %s\ntvalue: %s\n", hflag, dvalue, tvalue); 
+	char* result = get_dtemplate();
+	if (result == NULL)
+		return 1;
+
+	printf("hflag: %d\ndvalue: %s\ntvalue: %s\n", hflag, dvalue, tvalue); 	
+
 	// all good;
 	return 0;
 }
