@@ -10,6 +10,8 @@
 
 #define MAX_TEMPLATE_LENGTH 1000
 
+// normalize_path:
+// Removes repeating `/` characters from path.
 char*
 normalize_path
 (char* path, int length)
@@ -35,6 +37,9 @@ normalize_path
   return output;
 }
 
+// get_cpath:
+// Returns path to the `default` file containing
+// path to the default template.
 char* 
 get_cpath
 (void)
@@ -79,6 +84,36 @@ get_cpath
 	return cpath;
 }
 
+// get_ptemplate:
+// Find template using provided `path` and return
+// its content.
+char*
+get_ptemplate
+(const char *path)
+{
+  FILE* tfile = fopen(path, "r");
+  if (tfile == NULL)
+  {
+    perror(path);
+    return NULL;
+  }
+
+  char* template = (char*)malloc(MAX_TEMPLATE_LENGTH);
+  int template_size = fread(template, sizeof(char), MAX_TEMPLATE_LENGTH-1, tfile);
+  fclose(tfile);
+
+  if (template_size < 1)
+  {
+    fprintf(stderr, "%s: Template is invalid\n", path);
+    free(template);
+    return NULL;
+  }
+
+  return template;
+}
+
+// set_dtemplate:
+// Set new default template.
 int 
 set_dtemplate
 (const char *path)
@@ -88,17 +123,16 @@ set_dtemplate
 	// 1. Check if file exists
 	// 2. Check if template is valid (maybe?)
 	// 3. Set new default template
+   
+  return 1;
 }
 
+// get_dtemplate:
+// Find default template and return its content.
 char* 
 get_dtemplate
 (void)
 {	
-	// TODO: get_dtemplate
-	//
-	// 1. Check if default template specified
-	// 2. Return template text
-
 	char *cpath = get_cpath();
 	
 	FILE* cfile = fopen(cpath, "r");
@@ -123,28 +157,13 @@ get_dtemplate
   }
 
   tpath = normalize_path(tpath, strlen(tpath));
-
-  FILE* tfile = fopen(tpath, "r");
-  if (tfile == NULL)
+  char* template = get_ptemplate(tpath);
+  if (template == NULL)
   {
-    perror(tpath);
     free(cpath);
     free(tpath);
     return NULL;
   }
-
-  char* template = (char*)malloc(MAX_TEMPLATE_LENGTH);
-  int template_size = fread(template, sizeof(char), MAX_TEMPLATE_LENGTH-1, tfile);
-  fclose(tfile);
-
-  if (template_size < 1)
-  {
-    fprintf(stderr, "Default template is invalid.\n");
-    free(cpath);
-    free(tpath);
-    return NULL;
-  }
-
 
   free(cpath);
   free(tpath);
