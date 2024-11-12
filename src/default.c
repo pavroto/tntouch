@@ -18,14 +18,18 @@ normalize_path
   char* output = (char*)malloc(length);
   
   int k = 0;
-  for (int i = 0; i < length; i++)
+  for (int i = 0; path[i] != '\0' && i < length; i++)
   {
     if (buf && buf == '/' && path[i] == '/')
+      continue;
+
+    if (path[i] == '\n')
       continue;
 
     output[k++] = path[i];
     buf = path[i];
   }
+  output[k] = '\0';
   
   free(path);
   return output;
@@ -105,14 +109,44 @@ get_dtemplate
 		return NULL;
 	}	
 
-	char* template[MAX_TEMPLATE_LENGTH];
+	char* tpath = (char*)malloc(MAX_TEMPLATE_LENGTH);
 	
- 	int tsize = fread(template, sizeof(char), MAX_TEMPLATE_LENGTH-1, cfile);
+ 	int tpath_size = fread(tpath, sizeof(char), MAX_TEMPLATE_LENGTH-1, cfile);
 	fclose(cfile);
 
-	if (tsize <= 1)
+	if (tpath_size <= 1)
+  {
+    fprintf(stderr, "Default template path is invalid.\n");
+    free(tpath);
+    free(cpath);
 		return NULL;
-	
-  // TODO: return the template text
-  return NULL;
+  }
+
+  tpath = normalize_path(tpath, strlen(tpath));
+
+  FILE* tfile = fopen(tpath, "r");
+  if (tfile == NULL)
+  {
+    perror(tpath);
+    free(cpath);
+    free(tpath);
+    return NULL;
+  }
+
+  char* template = (char*)malloc(MAX_TEMPLATE_LENGTH);
+  int template_size = fread(template, sizeof(char), MAX_TEMPLATE_LENGTH-1, tfile);
+  fclose(tfile);
+
+  if (template_size < 1)
+  {
+    fprintf(stderr, "Default template is invalid.\n");
+    free(cpath);
+    free(tpath);
+    return NULL;
+  }
+
+
+  free(cpath);
+  free(tpath);
+  return template;
 }
