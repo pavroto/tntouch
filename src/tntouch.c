@@ -18,6 +18,7 @@ main
 	int hflag = 0;
 	char* dvalue = NULL;
 	char* tvalue = NULL;
+  char* ivalue = NULL;
 	
 	while ((opt = getopt(argc, argv, "hd:t:")) != -1)
 	{
@@ -38,11 +39,9 @@ main
 				tvalue = strdup(optarg);
 				break;
 
-			case '?':
-				return 1;
-
 			default:
-				abort();
+        show_help_text();
+        return 1;
 		}
 	}
 
@@ -52,13 +51,26 @@ main
 		return 0;
 	}
 
-	char* result = get_dtemplate();
-	if (result == NULL)
-		return 1;
-
-  printf("%s\n", result);
-
-	printf("hflag: %d\ndvalue: %s\ntvalue: %s\n", hflag, dvalue, tvalue); 	
+  if (argc != 1)
+  {
+    char ifpdash = 0;
+    for (int i = 1; i < argc; i++)
+    {
+      if (argv[i][0] == '-')
+      {
+        ifpdash = 1;
+        continue;
+      }
+      else if (ifpdash)
+      {
+        ifpdash = 0;
+        continue;
+      }
+      ivalue = argv[i];
+      break;
+    }
+  }
+	printf("hflag: %d\ndvalue: %s\ntvalue: %s\nivalue: %s\n", hflag, dvalue, tvalue, ivalue); 	
 
 	// all good;
 	return 0;
