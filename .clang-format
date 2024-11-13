@@ -1,0 +1,9 @@
+BasedOnStyle: GNU
+IndentWidth: 2
+UseTab: Never
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: Left
+AlignOperands: false
+AlignTrailingComments: false
+AllowShortFunctionsOnASingleLine: None
