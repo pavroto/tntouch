@@ -8,5 +8,8 @@ CFLAGS := -Wall -Wextra
 
 SRCS := $(shell find $(SRC_DIRS) -name '*.c')
 
-$(BUILD_DIR)/$(TARGET_EXEC): $(SRCS)
+$(BUILD_DIR)/$(TARGET_EXEC): $(SRCS) | $(BUILD_DIR)
 	$(CC) $(SRCS) $(CFLAGS) -o $@
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
