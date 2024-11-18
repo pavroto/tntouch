@@ -2,20 +2,20 @@
 #include <stdlib.h>
 
 #define MAX_TEMPLATE_LENGTH 1000
-#define BASH_BUF_LENGTH 250
+#define SHELL_BUF_LENGTH 250
 
 char *
-parse_bash (char *ptemplate, int *i)
+parse_shell (char *ptemplate, int *i)
 {
   static int iterator = 1;
   fprintf (stderr, "%d:\n%s", iterator++, ptemplate);
 
-  char *buf = (char *)malloc (BASH_BUF_LENGTH);
+  char *shell_script = (char *)malloc (SHELL_BUF_LENGTH);
 
   int pardepth = 1;
   int k = 0;
 
-  while (pardepth != 0 && ptemplate[k] != '\0' && k < BASH_BUF_LENGTH - 1)
+  while (pardepth != 0 && ptemplate[k] != '\0' && k < SHELL_BUF_LENGTH - 1)
     {
       if (ptemplate[k] == ')')
         {
@@ -30,18 +30,18 @@ parse_bash (char *ptemplate, int *i)
       if (ptemplate[k] == '(')
         pardepth += 1;
 
-      buf[k] = ptemplate[k];
+      shell_script[k] = ptemplate[k];
       k++;
     }
 
-  buf[k + 1] = '\0';
+  shell_script[k + 1] = '\0';
 
-  fprintf (stderr, "%s\n", buf);
+  fprintf (stderr, "%s\n", shell_script);
 
   if (pardepth != 0)
     {
       fprintf (stderr, "Invalid template\n");
-      free (buf);
+      free (shell_script);
       return NULL;
     }
 
@@ -62,7 +62,7 @@ parse (char *template, char *ivalue)
       // $(
       if (template[i] == '$' && template[i + 1] == '(')
         {
-          char *bash_result = parse_bash (template + i + 2, &i);
+          char *bash_result = parse_shell (template + i + 2, &i);
 
           if (bash_result == NULL)
             {
