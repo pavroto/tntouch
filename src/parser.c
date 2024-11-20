@@ -74,9 +74,6 @@ parse_shell (char *ptemplate, size_t *i)
       return NULL;
     }
 
-  fprintf (stderr, "shell_script:\n%s\n", shell_script);
-  // TODO: execute bash command and return its stdout;
-
   FILE *shell_stream = popen (shell_script, "r");
   if (shell_stream == NULL)
     {
@@ -111,8 +108,6 @@ parse_shell (char *ptemplate, size_t *i)
                           SHELL_OUTPUT_STEP, shell_stream);
       read_bytes += chunk_size;
     }
-  fprintf (stderr, "shell_output:\n%s", shell_output);
-
   free (shell_script);
   pclose (shell_stream);
 
