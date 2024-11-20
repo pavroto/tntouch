@@ -4,7 +4,7 @@ TARGET_EXEC := tntouch
 CC = gcc
 BUILD_DIR := ./build
 SRC_DIRS := ./src
-CFLAGS := -Wall -Wextra
+CFLAGS := -Wall -Wextra -lm
 
 SRCS := $(shell find $(SRC_DIRS) -name '*.c')
 
