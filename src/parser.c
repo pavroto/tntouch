@@ -41,11 +41,16 @@ parse_shell (char *ptemplate, size_t *i)
     {
       if (k >= shell_script_size - 1)
         {
-          shell_script = (char *)stepwise_realloc (shell_script, sizeof (char),
-                                                   &shell_script_size,
-                                                   SHELL_SCRIPT_STEP);
-          if (shell_script == NULL)
-            return NULL;
+          char *buf = (char *)stepwise_realloc (shell_script, sizeof (char),
+                                                &shell_script_size,
+                                                SHELL_SCRIPT_STEP);
+          if (buf == NULL)
+            {
+              free (shell_script);
+              return NULL;
+            }
+
+          shell_script = buf;
         }
 
       if (ptemplate[k] == ')')
@@ -126,11 +131,14 @@ parse (char *template)
     {
       if (i >= parsed_template_size - 2)
         {
-          parsed_template
-              = stepwise_realloc (parsed_template, sizeof (char),
-                                  &parsed_template_size, TEMPLATE_STEP);
-          if (parsed_template == NULL)
-            return NULL;
+          char *buf = stepwise_realloc (parsed_template, sizeof (char),
+                                        &parsed_template_size, TEMPLATE_STEP);
+          if (buf == NULL)
+            {
+              free (parsed_template);
+              return NULL;
+            }
+          parsed_template = buf;
         }
       if (template[i] == '$' && template[i + 1] == '(')
         {
