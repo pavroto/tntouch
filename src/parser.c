@@ -1,26 +1,57 @@
+// SPDX-License-Identifier: MIT
+
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_TEMPLATE_LENGTH 1000
-#define SHELL_BUF_LENGTH 250
+#define TEMPLATE_INIT_SIZE 1000 // one thousand
+#define TEMPLATE_STEP 1000 // one thousand
+
+#define SHELL_SCRIPT_INIT_SIZE 250 // two hundred fifty
+#define SHELL_SCRIPT_STEP 250 // two hundred fifty
+
+#define SHELL_OUTPUT_INIT_SIZE 250 // two hundred fifty
+#define SHELL_OUTPUT_STEP 250 // two hundred fifty
+
+static void *
+stepwise_realloc (void *s, const size_t size, size_t *cur_length,
+                  const size_t step)
+{
+  s = realloc (s, (size * *cur_length) + (size * step));
+  *cur_length = *cur_length + step;
+
+  if (s == NULL)
+    {
+      perror ("Memory allocation fail");
+      return NULL;
+    }
+
+  return s;
+}
 
 char *
-parse_shell (char *ptemplate, int *i)
+parse_shell (char *ptemplate, size_t *i)
 {
-  static int iterator = 1;
-  fprintf (stderr, "%d:\n%s", iterator++, ptemplate);
+  size_t shell_script_size = SHELL_SCRIPT_INIT_SIZE;
+  char *shell_script = (char *)malloc (SHELL_SCRIPT_INIT_SIZE);
 
-  char *shell_script = (char *)malloc (SHELL_BUF_LENGTH);
+  int depth = 1;
+  size_t k = 0;
 
-  int pardepth = 1;
-  int k = 0;
-
-  while (pardepth != 0 && ptemplate[k] != '\0' && k < SHELL_BUF_LENGTH - 1)
+  while (ptemplate[k] != '\0')
     {
+      if (k >= shell_script_size - 1)
+        {
+          shell_script = (char *)stepwise_realloc (shell_script, sizeof (char),
+                                                   &shell_script_size,
+                                                   SHELL_SCRIPT_STEP);
+          if (shell_script == NULL)
+            return NULL;
+        }
+
       if (ptemplate[k] == ')')
         {
-          pardepth -= 1;
-          if (pardepth == 0)
+          depth -= 1;
+          if (depth == 0)
             {
               *i += k + 1;
               break;
@@ -28,38 +59,84 @@ parse_shell (char *ptemplate, int *i)
         }
 
       if (ptemplate[k] == '(')
-        pardepth += 1;
+        depth += 1;
 
       shell_script[k] = ptemplate[k];
       k++;
     }
 
-  shell_script[k + 1] = '\0';
+  shell_script[k] = '\0';
 
-  fprintf (stderr, "%s\n", shell_script);
-
-  if (pardepth != 0)
+  if (depth != 0)
     {
       fprintf (stderr, "Invalid template\n");
       free (shell_script);
       return NULL;
     }
 
+  fprintf (stderr, "shell_script:\n%s\n", shell_script);
   // TODO: execute bash command and return its stdout;
 
-  return NULL;
+  FILE *shell_stream = popen (shell_script, "r");
+  if (shell_stream == NULL)
+    {
+      perror ("popen");
+      free (shell_script);
+      return NULL;
+    }
+
+  size_t shell_output_size = SHELL_OUTPUT_INIT_SIZE;
+  char *shell_output = (char *)malloc (SHELL_OUTPUT_INIT_SIZE);
+
+  size_t chunk_size = 0;
+  size_t read_bytes = 0;
+  while (!feof (shell_stream))
+    {
+      if (read_bytes + SHELL_OUTPUT_STEP > shell_output_size)
+        {
+          char *buf = (char *)stepwise_realloc (shell_output, sizeof (char),
+                                                &shell_output_size,
+                                                SHELL_OUTPUT_STEP);
+          if (buf == NULL)
+            {
+              free (shell_script);
+              free (shell_output);
+              pclose (shell_stream);
+              return NULL;
+            }
+          shell_output = buf;
+        }
+
+      chunk_size = fread (shell_output + read_bytes, sizeof (char),
+                          SHELL_OUTPUT_STEP, shell_stream);
+      read_bytes += chunk_size;
+    }
+  fprintf (stderr, "shell_output:\n%s", shell_output);
+
+  free (shell_script);
+  pclose (shell_stream);
+
+  return shell_output;
 }
 
 char *
-parse (char *template, char *ivalue)
+parse (char *template)
 {
-  char *parsed_template = (char *)calloc (MAX_TEMPLATE_LENGTH, sizeof (char));
+  size_t parsed_template_size = TEMPLATE_INIT_SIZE;
+  char *parsed_template = (char *)malloc (TEMPLATE_INIT_SIZE);
 
-  int i = 0;
+  size_t i = 0;
   int k = 0;
   while (template[i] != '\0')
     {
-      // $(
+      if (i >= parsed_template_size - 2)
+        {
+          parsed_template
+              = stepwise_realloc (parsed_template, sizeof (char),
+                                  &parsed_template_size, TEMPLATE_STEP);
+          if (parsed_template == NULL)
+            return NULL;
+        }
       if (template[i] == '$' && template[i + 1] == '(')
         {
           char *bash_result = parse_shell (template + i + 2, &i);
@@ -73,7 +150,7 @@ parse (char *template, char *ivalue)
       // \i
       else if (template[i] == '\\' && template[i + 1] == 'i')
         {
-          if (ivalue)
+          if (1)
             {
             }
           else
