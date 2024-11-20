@@ -8,8 +8,6 @@
 #define PROJECT_DIR "/tntouch"
 #define CONFIG_NAME "/default"
 
-#define MAX_TEMPLATE_LENGTH 1000
-
 // normalize_path:
 // Removes repeating `/` characters from path.
 char *
@@ -91,14 +89,17 @@ get_ptemplate (const char *path)
       return NULL;
     }
 
-  char *template = (char *)malloc (MAX_TEMPLATE_LENGTH);
-  int template_size
-      = fread (template, sizeof (char), MAX_TEMPLATE_LENGTH - 1, tfile);
+  fseek (tfile, 0, SEEK_END);
+  long tfile_size = ftell (tfile);
+  rewind (tfile);
+
+  char *template = (char *)malloc (tfile_size + 1);
+  long template_size = fread (template, sizeof (char), tfile_size, tfile);
   fclose (tfile);
 
-  if (template_size < 1)
+  if (template_size != tfile_size)
     {
-      fprintf (stderr, "%s: Template is invalid\n", path);
+      perror ("Error reading configuration file");
       free (template);
       return NULL;
     }
@@ -108,17 +109,18 @@ get_ptemplate (const char *path)
 
 // set_dtemplate:
 // Set new default template.
-int
-set_dtemplate (const char *path)
-{
-  // TODO: set_dtemplate
-  //
-  // 1. Check if file exists
-  // 2. Check if template is valid (maybe?)
-  // 3. Set new default template
 
-  return 1;
-}
+// int
+// set_dtemplate (const char *path)
+// {
+//   // TODO: set_dtemplate
+//   //
+//   // 1. Check if file exists
+//   // 2. Check if template is valid (maybe?)
+//   // 3. Set new default template
+//
+//   return 1;
+// }
 
 // get_dtemplate:
 // Find default template and return its content.
@@ -135,15 +137,18 @@ get_dtemplate (void)
       return NULL;
     }
 
-  char *tpath = (char *)malloc (MAX_TEMPLATE_LENGTH);
+  fseek (cfile, 0, SEEK_END);
+  size_t cfile_size = ftell (cfile);
+  rewind (cfile);
 
-  int tpath_size
-      = fread (tpath, sizeof (char), MAX_TEMPLATE_LENGTH - 1, cfile);
+  char *tpath = (char *)malloc (cfile_size + 1);
+
+  size_t tpath_size = fread (tpath, sizeof (char), cfile_size, cfile);
   fclose (cfile);
 
-  if (tpath_size <= 1)
+  if (tpath_size != cfile_size)
     {
-      fprintf (stderr, "Default template path is invalid.\n");
+      perror ("Error reading default template");
       free (tpath);
       free (cpath);
       return NULL;
