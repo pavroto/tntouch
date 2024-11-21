@@ -14,7 +14,7 @@ char *
 normalize_path (char *path, int length)
 {
   char buf;
-  char *output = (char *)malloc (length);
+  char *output = (char *)calloc (length, sizeof (char));
 
   int k = 0;
   for (int i = 0; path[i] != '\0' && i < length; i++)
@@ -93,7 +93,7 @@ get_ptemplate (const char *path)
   long tfile_size = ftell (tfile);
   rewind (tfile);
 
-  char *template = (char *)malloc (tfile_size + 1);
+  char *template = (char *)calloc (tfile_size + 1, sizeof (char));
   long template_size = fread (template, sizeof (char), tfile_size, tfile);
   fclose (tfile);
 
@@ -141,7 +141,7 @@ get_dtemplate (void)
   size_t cfile_size = ftell (cfile);
   rewind (cfile);
 
-  char *tpath = (char *)malloc (cfile_size + 1);
+  char *tpath = (char *)calloc (cfile_size + 1, sizeof (char));
 
   size_t tpath_size = fread (tpath, sizeof (char), cfile_size, cfile);
   fclose (cfile);
