@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "default.h"
+#include "parser.h"
 
 void show_help_text (void);
 
