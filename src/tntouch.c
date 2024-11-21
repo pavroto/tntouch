@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "default.h"
+#include "file.h"
 #include "parser.h"
 
 void show_help_text (void);
@@ -73,8 +74,28 @@ main (int argc, char *argv[])
   printf ("hflag: %d\ndvalue: %s\ntvalue: %s\nivalue: %s\n", hflag, dvalue,
           tvalue, ivalue);
 
-  // all good;
-  return 0;
+  char *template;
+  if (tvalue)
+    template = get_ptemplate (tvalue);
+  else
+    template = get_dtemplate ();
+
+  if (template == NULL)
+    return 1;
+
+  char *parsed_template = parse (template, ivalue);
+  if (parsed_template == NULL)
+    {
+      free (template);
+      return 1;
+    }
+
+  int result = create_file (parsed_template);
+
+  free (template);
+  free (parsed_template);
+
+  return result;
 }
 
 void
