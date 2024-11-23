@@ -71,9 +71,10 @@ main (int argc, char *argv[])
           break;
         }
     }
-  printf ("hflag: %d\ndvalue: %s\ntvalue: %s\nivalue: %s\n", hflag, dvalue,
-          tvalue, ivalue);
 
+  if (dvalue)
+    return set_dtemplate(dvalue);
+    
   char *template;
   if (tvalue)
     template = get_ptemplate (tvalue);
