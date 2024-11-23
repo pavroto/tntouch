@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "file.h"
 
 #define DEFAULT_CONFIG_DIR "/.config"
 #define PROJECT_DIR "/tntouch"
@@ -109,18 +110,35 @@ get_ptemplate (const char *path)
 
 // set_dtemplate:
 // Set new default template.
+int
+set_dtemplate (const char *dtpath)
+{
+  if (!if_file_exists (dtpath))
+    {
+      fprintf (stderr, "%s: File does not exist\n", dtpath);
+      return 1;
+    }
 
-// int
-// set_dtemplate (const char *path)
-// {
-//   // TODO: set_dtemplate
-//   //
-//   // 1. Check if file exists
-//   // 2. Check if template is valid (maybe?)
-//   // 3. Set new default template
-//
-//   return 1;
-// }
+  char *cfile_path = get_cpath ();
+  FILE *cfile = fopen (cfile_path, "w");
+  if (cfile == NULL)
+    {
+      perror (cfile_path);
+      return 1;
+    }
+
+  size_t count = strlen (dtpath);
+  size_t written = fwrite (dtpath, sizeof (char), count, cfile);
+  if (written != count)
+    {
+      perror ("Error writing to file");
+      fclose (cfile);
+      return 1;
+    }
+
+  fclose (cfile);
+  return 0;
+}
 
 // get_dtemplate:
 // Find default template and return its content.
