@@ -17,23 +17,6 @@
 #define DEF_IVALUE_INIT_SIZE 50
 #define DEF_IVALUE_STEP 50
 
-static void
-for_printf (char *s, size_t size)
-{
-  for (size_t i = 0; i < size; i++)
-    {
-      if (s[i] == '\0')
-        printf ("\\0");
-      else if (s[i] == '\n')
-        printf ("\\n");
-      else if (s[i] >= 32 && s[i] <= 126)
-        printf ("%c", s[i]);
-      else
-        printf ("<%d>", s[i]);
-    }
-  printf ("\n\n");
-}
-
 static void *
 stepwise_realloc (void *s, const size_t size, size_t *cur_length,
                   const size_t step)
@@ -352,6 +335,5 @@ parse (char *template, char *ivalue)
         i++;
     }
 
-  for_printf (parsed_template, parsed_template_size);
   return parsed_template;
 }
