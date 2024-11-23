@@ -1,18 +1,12 @@
 // SPDX-License-Identifier: MIT
 
-#include <stdbool.h>
 #include <stdio.h>
+#include <unistd.h>
 
-static int
+int
 if_file_exists (const char *fname)
 {
-  FILE *file = fopen (fname, "r");
-
-  if (file == NULL)
-    return false;
-
-  fclose (file);
-  return true;
+  return access(fname, F_OK) == 0;
 }
 
 int
