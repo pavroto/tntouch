@@ -6,7 +6,7 @@
 int
 if_file_exists (const char *fname)
 {
-  return access(fname, F_OK) == 0;
+  return access (fname, F_OK) == 0;
 }
 
 int
