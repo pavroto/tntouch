@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 
+#include "file.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "file.h"
 
 #define DEFAULT_CONFIG_DIR "/.config"
 #define PROJECT_DIR "/tntouch"
@@ -113,11 +113,8 @@ get_ptemplate (const char *path)
 int
 set_dtemplate (const char *dtpath)
 {
-  if (!if_file_exists (dtpath))
-    {
-      fprintf (stderr, "%s: File does not exist\n", dtpath);
-      return 1;
-    }
+  if (if_file_exists (dtpath) == 1)
+    return 1;
 
   char *cfile_path = get_cpath ();
   FILE *cfile = fopen (cfile_path, "w");
