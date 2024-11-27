@@ -73,8 +73,8 @@ main (int argc, char *argv[])
     }
 
   if (dvalue)
-    return set_dtemplate(dvalue);
-    
+    return set_dtemplate (dvalue);
+
   char *template;
   if (tvalue)
     template = get_ptemplate (tvalue);
@@ -92,6 +92,8 @@ main (int argc, char *argv[])
     }
 
   int result = create_file (parsed_template);
+
+  printf ("%s\n", parsed_template);
 
   free (template);
   free (parsed_template);
