@@ -40,7 +40,7 @@ restrict_strcat (char *dst, char *src, char *restricted_chars)
   char *ptr = dst + strlen (dst);
 
   int k = 0;
-  int if_allowed = 1;
+  int is_allowed = 1;
 
   while (*src != '\0')
     {
@@ -48,18 +48,18 @@ restrict_strcat (char *dst, char *src, char *restricted_chars)
         {
           if (*src == restricted_chars[k])
             {
-              if_allowed = 0;
+              is_allowed = 0;
               break;
             }
           k++;
         }
 
-      if (if_allowed)
+      if (is_allowed)
         *ptr++ = *src++;
       else
         *src++;
 
-      if_allowed = 1;
+      is_allowed = 1;
       k = 0;
     }
 
@@ -74,7 +74,7 @@ parse_shell (char *ptemplate, size_t *i)
   char *shell_script = (char *)calloc (SHELL_SCRIPT_INIT_SIZE, sizeof (char));
 
   int depth = 1;
-  int if_string = 0;
+  int is_string = 0;
   size_t k = 0;
 
   while (ptemplate[k] != '\0' && depth != 0)
@@ -94,8 +94,8 @@ parse_shell (char *ptemplate, size_t *i)
         }
 
       if (ptemplate[k] == '"')
-        if_string = (if_string) ? 0 : 1;
-      if (if_string == 0)
+        is_string = (is_string) ? 0 : 1;
+      if (is_string == 0)
         {
           if (ptemplate[k] == ')')
             {
@@ -162,6 +162,38 @@ parse_shell (char *ptemplate, size_t *i)
   pclose (shell_stream);
 
   return shell_output;
+}
+
+static char
+is_escaped (char *c)
+{
+  if (*c != '\\')
+    return 0;
+
+  char next = *(c + 1);
+
+  switch (next)
+    {
+    case '\0':
+      return -1;
+      break;
+
+    case 'i':
+      return 'i';
+      break;
+    case ')':
+      return ')';
+      break;
+    case '(':
+      return '(';
+      break;
+    case '\\':
+      return '\\';
+      break;
+    default:
+      return 0;
+      break;
+    }
 }
 
 char *
@@ -233,11 +265,20 @@ parse (char *template, char *ivalue)
                 {
                   i += 3;
                   int depth = 1;
+                  int is_escape;
                   while (template[i] != '\0' && depth != 0)
                     {
-                      if (template[i] == '(')
+                      is_escape = 0;
+
+                      if (is_escaped (&template[i]))
+                        {
+                          is_escape = 1;
+                          i++;
+                        }
+
+                      if (template[i] == '(' && !is_escape)
                         depth++;
-                      if (template[i] == ')')
+                      if (template[i] == ')' && !is_escape)
                         {
                           depth--;
                           if (depth == 0)
@@ -298,9 +339,11 @@ parse (char *template, char *ivalue)
 
               i += 3;
               int depth = 1;
+              int is_escape;
 
               while (template[i] != '\0' && depth != 0)
                 {
+                  is_escape = 0;
                   if (k >= parsed_template_size - 1)
                     {
                       char *buf = (char *)stepwise_realloc (
@@ -315,9 +358,13 @@ parse (char *template, char *ivalue)
 
                       parsed_template = buf;
                     }
-                  if (template[i] == '(')
+
+                  if (is_escape = is_escaped (&template[i]))
+                    i++;
+
+                  if (template[i] == '(' && !is_escape)
                     depth++;
-                  if (template[i] == ')')
+                  if (template[i] == ')' && !is_escape)
                     {
                       depth--;
                       if (depth == 0)
