@@ -74,6 +74,7 @@ parse_shell (char *ptemplate, size_t *i)
   char *shell_script = (char *)calloc (SHELL_SCRIPT_INIT_SIZE, sizeof (char));
 
   int depth = 1;
+  int if_string = 0;
   size_t k = 0;
 
   while (ptemplate[k] != '\0' && depth != 0)
@@ -92,24 +93,25 @@ parse_shell (char *ptemplate, size_t *i)
           shell_script = buf;
         }
 
-      switch (ptemplate[k])
+      if (ptemplate[k] == '"')
+        if_string = (if_string) ? 0 : 1;
+      if (if_string == 0)
         {
-        case ')':
-          depth--;
-          if (depth == 0)
+          if (ptemplate[k] == ')')
             {
-              *i += k + 1;
+              depth--;
+              if (depth == 0)
+                {
+                  *i += k + 1;
+                  break;
+                }
             }
-          break;
-        case '(':
-          depth++;
-          break;
 
-        default:
-          shell_script[k] = ptemplate[k];
-          break;
+          if (ptemplate[k] == '(')
+            depth++;
         }
 
+      shell_script[k] = ptemplate[k];
       k++;
     }
 
