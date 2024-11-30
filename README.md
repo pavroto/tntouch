@@ -81,3 +81,20 @@ Templates are plain text files containing the desired filename format. They supp
 3. Literal text:
     - All other text is used as-is in the resulting filename.
 
+
+## Why?
+
+Well... first, it's an assignment for my university course.
+
+Second, I am the one who likes to create files with names like 
+`2024-11-28-SystemProgramming-Networking.txt` for notes, so later it is easier 
+for me to find it with `find` tool in my huge university materials archive. But writing dates 
+over and over again is just exhausting, so I decided to both pass the assignment and create a tool 
+that would solve my own problem. And technically, that is why the tool is designed 
+to work the way it works.
+
+Also, `tntouch` doesn't touch ¯\\_(ツ)_/¯
+
+I mean, original `touch` from GNU Coreutils was designed to "update the access and modification 
+times of each FILE to the current time", but I did not want my tool to do that, so I just made 
+it to return an error if the file with the same name already exists.
