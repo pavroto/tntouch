@@ -76,6 +76,8 @@ Templates are plain text files containing the desired filename format. They supp
     - With no input: `Foo`
     - With input `Bar`: `Bar`
 
+**_NOTE:_** To use '(' and ')' characters inside DefaultValue, please use '\\(' and '\\)' respectively.
+
 3. Literal text:
     - All other text is used as-is in the resulting filename.
 
