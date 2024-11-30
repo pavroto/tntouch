@@ -93,7 +93,7 @@ over and over again is just exhausting, so I decided to both pass the assignment
 that would solve my own problem. And technically, that is why the tool is designed 
 to work the way it works.
 
-Also, `tntouch` doesn't touch ¯\\_(ツ)_/¯
+Also, `tntouch` doesn't touch ¯\\\_(ツ)\_/¯
 
 I mean, original `touch` from GNU Coreutils was designed to "update the access and modification 
 times of each FILE to the current time", but I did not want my tool to do that, so I just made 
