@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
+#include <config.h>
 #include <ctype.h>
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,47 +13,76 @@
 #include "parser.h"
 
 void show_help_text (void);
+void show_version_text (void);
+
+static int verbose_flag = 0; // TODO: Not used yet. Declared for future.
+static int version_flag = 0;
+static int help_flag = 0;
+
+static char *default_value = NULL;
+static char *input_value = NULL;
+static char *template_value = NULL;
 
 int
 main (int argc, char *argv[])
 {
-  int opt;
-  int hflag = 0;
-  char *dvalue = NULL;
-  char *tvalue = NULL;
-  char *ivalue = NULL;
+  int c;
 
-  while ((opt = getopt (argc, argv, "hd:t:")) != -1)
+  while (1)
     {
-      switch (opt)
+      static struct option long_options[]
+          = { // No arguments
+              { "verbose", no_argument, &verbose_flag, 1 },
+              { "help", no_argument, &help_flag, 1 },
+              { "version", no_argument, &version_flag, 1 },
+
+              // With arguments
+              { "template", required_argument, 0, 't' },
+              { "default", required_argument, 0, 'd' },
+              { 0, 0, 0, 0 }
+            };
+
+      int option_index = 0;
+
+      c = getopt_long (argc, argv, "t:d:", long_options, &option_index);
+
+      if (c == -1)
+        break;
+
+      switch (c)
         {
-        // h: Show help page;
-        case 'h':
-          hflag = 1;
+        case 0:
           break;
 
-        // d: Specify default template;
-        case 'd':
-          dvalue = strdup (optarg);
-          break;
-
-        // t: Specify template path;
         case 't':
-          tvalue = strdup (optarg);
+          template_value = optarg;
+          break;
+
+        case 'd':
+          default_value = optarg;
+          break;
+
+        case '?':
           break;
 
         default:
-          show_help_text ();
-          return 1;
+          abort ();
         }
     }
 
-  if (hflag)
+  if (help_flag)
     {
       show_help_text ();
       return 0;
     }
 
+  if (version_flag)
+    {
+      show_version_text ();
+      return 0;
+    }
+
+  // Find standalone argument if exists
   if (argc != 1)
     {
       char ifpdash = 0;
@@ -67,24 +98,24 @@ main (int argc, char *argv[])
               ifpdash = 0;
               continue;
             }
-          ivalue = argv[i];
+          input_value = argv[i];
           break;
         }
     }
 
-  if (dvalue)
-    return set_dtemplate (dvalue);
+  if (default_value)
+    return set_dtemplate (default_value);
 
   char *template;
-  if (tvalue)
-    template = get_ptemplate (tvalue);
+  if (template_value)
+    template = get_ptemplate (template_value);
   else
     template = get_dtemplate ();
 
   if (template == NULL)
     return 1;
 
-  char *parsed_template = parse (template, ivalue);
+  char *parsed_template = parse (template, input_value);
   if (parsed_template == NULL)
     {
       free (template);
@@ -110,12 +141,27 @@ show_help_text (void)
         "Example: tntouch -t /path/to/template Foo\n"
         "\n"
         "Options:\n"
-        "-t   Select a template.\n"
-        "-d   Select a default template.\n"
-        "-h   Show this help page.\n"
+        "-t, --template   Select a template.\n"
+        "-d, --default    Set a default template.\n"
+        "--help           Show this help page.\n"
+        "--version        Show package version.\n"
         "\n"
-        "Report bugs to: <https://github.com/pavroto/tntouch/issues>\n"
-        "Tntouch home page: <https://github.com/pavroto/tntouch>\n";
+        "Report bugs to: <" PACKAGE_URL "/issues>\n"
+        "Tntouch home page: <" PACKAGE_URL ">\n";
 
   printf (help_text);
+}
+
+void
+show_version_text (void)
+{
+  static const char *version_text = PACKAGE_STRING
+      "\nCopyright (c) 2024 pavroto\n"
+      "MIT License"
+      "\n"
+      "This is free software; you are free to change and redistribute it.\n"
+      "There is NO WARRANTY, to the extent permitted by law.\n"
+      "More information here: <https://mit-license.org/>\n";
+
+  printf (version_text);
 }
