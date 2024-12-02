@@ -5,6 +5,80 @@ Tntouch is a simple command line tool for creating files using predefined names 
 Tntouch is an Open Source project covered fully by MIT License. This project was 
 originally conceived as a learning project.
 
+## Installation
+
+### Prerequisites
+
+Ensure that the following tools are installed on your system before proceeding: 
+
+- GCC: The GNU Compiler Collection for building the project.
+- GNU Make: A build automation tool for running the provided Makefile.
+
+You can check if these are installed using the following commands:
+
+```
+gcc --version
+make --version
+```
+
+If they are not installed, you can install them using your system's package manager:
+
+Debian/Ubuntu:
+
+```
+sudo apt update
+sudo apt install gcc make
+```
+
+Fedora:
+```
+sudo dnf install gcc make
+```
+
+Arch Linux:
+
+```
+sudo pacman -S gcc make
+```
+
+macOS (via Homebrew):
+
+```
+brew install gcc make
+```
+
+### Installation Steps
+
+Clone the repository:
+
+```
+git clone https://github.com/pavroto/tntouch.git
+cd tntouch
+```
+
+Configure:
+
+```
+./configure
+```
+
+Build the project:
+
+```
+make
+```
+
+Install the binary:
+
+```
+sudo make install
+```
+
+Verify the installation:
+
+```
+tntouch --version
+```
 
 ## Usage
 
