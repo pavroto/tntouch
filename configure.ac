@@ -1,5 +1,6 @@
-AC_INIT([tntouch], [0.0.1], [pavel.rotovv@gmail.com])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+m4_define([tntouch_VERSION], [0.0.1])
+AC_INIT([tntouch], m4_defn([tntouch_VERSION]), [pavel.rotovv@gmail.com], [tntouch], [https://github.com/pavroto/tntouch])
+AM_INIT_AUTOMAKE([foreign])
 AC_PROG_CC
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([

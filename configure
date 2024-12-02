@@ -606,7 +606,7 @@ PACKAGE_TARNAME='tntouch'
 PACKAGE_VERSION='0.0.1'
 PACKAGE_STRING='tntouch 0.0.1'
 PACKAGE_BUGREPORT='pavel.rotovv@gmail.com'
-PACKAGE_URL=''
+PACKAGE_URL='https://github.com/pavroto/tntouch'
 
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
@@ -1355,6 +1355,7 @@ Use these variables to override the choices made by 'configure' or to help
 it to find libraries and programs with nonstandard names/locations.
 
 Report bugs to <pavel.rotovv@gmail.com>.
+tntouch home page: <https://github.com/pavroto/tntouch>.
 _ACEOF
 ac_status=$?
 fi
@@ -4752,7 +4753,8 @@ $config_headers
 Configuration commands:
 $config_commands
 
-Report bugs to <pavel.rotovv@gmail.com>."
+Report bugs to <pavel.rotovv@gmail.com>.
+tntouch home page: <https://github.com/pavroto/tntouch>."
 
 _ACEOF
 ac_cs_config=`printf "%s\n" "$ac_configure_args" | sed "$ac_safe_unquote"`
