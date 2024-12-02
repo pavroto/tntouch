@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +15,12 @@
 
 #define DEF_IVALUE_INIT_SIZE 50
 #define DEF_IVALUE_STEP 50
+
+static size_t
+ceil_size_t_division (size_t x, size_t y)
+{
+  return (x + y - 1) / y;
+}
 
 static void *
 stepwise_realloc (void *s, const size_t size, size_t *cur_length,
@@ -240,7 +245,8 @@ parse (char *template, char *ivalue)
             {
               char *buf = (char *)stepwise_realloc (
                   parsed_template, sizeof (char), &parsed_template_size,
-                  TEMPLATE_STEP * ceil (bash_result_len / TEMPLATE_STEP));
+                  TEMPLATE_STEP
+                      * ceil_size_t_division (bash_result_len, TEMPLATE_STEP));
 
               if (buf == NULL)
                 {
@@ -294,7 +300,9 @@ parse (char *template, char *ivalue)
                       char *buf = (char *)stepwise_realloc (
                           parsed_template, sizeof (char),
                           &parsed_template_size,
-                          TEMPLATE_STEP * ceil (ivalue_len / TEMPLATE_STEP));
+                          TEMPLATE_STEP
+                              * ceil_size_t_division (ivalue_len,
+                                                      TEMPLATE_STEP));
 
                       if (buf == NULL)
                         {
@@ -315,7 +323,9 @@ parse (char *template, char *ivalue)
                       char *buf = (char *)stepwise_realloc (
                           parsed_template, sizeof (char),
                           &parsed_template_size,
-                          TEMPLATE_STEP * ceil (ivalue_len / TEMPLATE_STEP));
+                          TEMPLATE_STEP
+                              * ceil_size_t_division (ivalue_len,
+                                                      TEMPLATE_STEP));
 
                       if (buf == NULL)
                         {
