@@ -113,7 +113,13 @@ get_ptemplate (const char *path)
 int
 set_dtemplate (const char *dtpath)
 {
-  if (if_file_exists (dtpath) == 1)
+  int file_status = if_file_exists (dtpath);
+  if (file_status == -1)
+    {
+      perror (dtpath);
+      return 1;
+    }
+  else if (file_status == 1)
     return 1;
 
   char *cfile_path = get_cpath ();
