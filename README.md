@@ -68,7 +68,6 @@ This will:
 
 Configure:
 ```
-autoreconf --install
 ./configure
 ```
 
