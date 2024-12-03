@@ -13,6 +13,9 @@ Ensure that the following tools are installed on your system before proceeding:
 
 - GCC: The GNU Compiler Collection for building the project.
 - GNU Make: A build automation tool for running the provided Makefile.
+- Autotools: Required to generate the build system files. This includes:
+    - autoconf: Generates the configure script from configure.ac.
+    - automake: Generates Makefile.in from Makefile.am.
 
 You can check if these are installed using the following commands:
 
@@ -24,58 +27,62 @@ make --version
 If they are not installed, you can install them using your system's package manager:
 
 Debian/Ubuntu:
-
 ```
 sudo apt update
-sudo apt install gcc make
+sudo apt install gcc make autoconf automake
 ```
 
 Fedora:
 ```
-sudo dnf install gcc make
+sudo dnf install gcc make autoconf automake
 ```
 
 Arch Linux:
-
 ```
-sudo pacman -S gcc make
+sudo pacman -S gcc make autoconf automake
 ```
 
 macOS (via Homebrew):
-
 ```
-brew install gcc make
+brew install gcc make autoconf automake
 ```
 
 ### Installation Steps
 
 Clone the repository:
-
 ```
 git clone https://github.com/pavroto/tntouch.git
 cd tntouch
 ```
 
-Configure:
-
+Prepare the Build System with Autotools
+Run the following command to initialize the build system:
 ```
+autoreconf --install
+```
+This will:
+
+- Generate the configure script.
+- Create other required files such as Makefile.in and config.h.in.
+- Ensure all necessary files are present for the build process.
+
+Configure:
+```
+autoreconf --install
 ./configure
 ```
 
 Build the project:
-
 ```
 make
 ```
 
 Install the binary:
-
 ```
 sudo make install
 ```
 
 Verify the installation:
-
 ```
 tntouch --version
 ```
