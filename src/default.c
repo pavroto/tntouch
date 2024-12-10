@@ -141,6 +141,13 @@ set_dtemplate (const char *dtpath)
   else if (file_status == 1)
     return 1;
 
+  char *dtpath_resolved;
+  if ((dtpath_resolved = realpath (dtpath, NULL)) == NULL)
+    {
+      free (dtpath_resolved);
+      return 1;
+    }
+
   char *cfile_path = get_cfile_path ();
   char *cdir_path = get_cdir_path ();
 
@@ -152,6 +159,7 @@ set_dtemplate (const char *dtpath)
           perror (cdir_path);
           free (cfile_path);
           free (cdir_path);
+          free (dtpath_resolved);
           return 1;
         }
     }
@@ -159,6 +167,7 @@ set_dtemplate (const char *dtpath)
     {
       free (cfile_path);
       free (cdir_path);
+      free (dtpath_resolved);
       return 1;
     }
 
@@ -168,22 +177,25 @@ set_dtemplate (const char *dtpath)
       perror (cfile_path);
       free (cfile_path);
       free (cdir_path);
+      free (dtpath_resolved);
       return 1;
     }
 
-  size_t count = strlen (dtpath);
-  size_t written = fwrite (dtpath, sizeof (char), count, cfile);
+  size_t count = strlen (dtpath_resolved);
+  size_t written = fwrite (dtpath_resolved, sizeof (char), count, cfile);
   if (written != count)
     {
       perror ("Error writing to file");
       free (cfile_path);
       free (cdir_path);
+      free (dtpath_resolved);
       fclose (cfile);
       return 1;
     }
 
   free (cfile_path);
   free (cdir_path);
+  free (dtpath_resolved);
   fclose (cfile);
   return 0;
 }
